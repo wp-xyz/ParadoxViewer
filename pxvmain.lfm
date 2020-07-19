@@ -1,0 +1,332 @@
+object MainForm: TMainForm
+  Left = 340
+  Height = 571
+  Top = 154
+  Width = 984
+  Caption = 'MainForm'
+  ClientHeight = 571
+  ClientWidth = 984
+  OnActivate = FormActivate
+  OnCreate = FormCreate
+  LCLVersion = '2.1.0.0'
+  object Panel1: TPanel
+    Left = 6
+    Height = 559
+    Top = 6
+    Width = 316
+    Align = alLeft
+    BorderSpacing.Left = 6
+    BorderSpacing.Top = 6
+    BorderSpacing.Bottom = 6
+    BevelOuter = bvNone
+    ClientHeight = 559
+    ClientWidth = 316
+    TabOrder = 0
+    object ShellTreeView: TShellTreeView
+      Left = 0
+      Height = 311
+      Top = 0
+      Width = 316
+      Align = alClient
+      FileSortType = fstFoldersFirst
+      HideSelection = False
+      Images = ImageList
+      ReadOnly = True
+      TabOrder = 0
+      OnGetImageIndex = ShellTreeViewGetImageIndex
+      OnGetSelectedIndex = ShellTreeViewGetSelectedIndex
+      Options = [tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+      ObjectTypes = [otFolders]
+      ShellListView = ShellListView
+    end
+    object ShellListView: TShellListView
+      Left = 0
+      Height = 243
+      Top = 316
+      Width = 316
+      Align = alBottom
+      Color = clDefault
+      HideSelection = False
+      ReadOnly = True
+      SmallImages = ImageList
+      SortType = stText
+      TabOrder = 1
+      OnSelectItem = ShellListViewSelectItem
+      ObjectTypes = [otNonFolders]
+      ShellTreeView = ShellTreeView
+    end
+    object Splitter2: TSplitter
+      Cursor = crVSplit
+      Left = 0
+      Height = 5
+      Top = 311
+      Width = 316
+      Align = alBottom
+      ResizeAnchor = akBottom
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 322
+    Height = 571
+    Top = 0
+    Width = 6
+  end
+  object PageControl: TPageControl
+    Left = 328
+    Height = 559
+    Top = 6
+    Width = 650
+    ActivePage = pgData
+    Align = alClient
+    BorderSpacing.Top = 6
+    BorderSpacing.Right = 6
+    BorderSpacing.Bottom = 6
+    TabIndex = 0
+    TabOrder = 2
+    object pgData: TTabSheet
+      Caption = 'Data'
+      ClientHeight = 531
+      ClientWidth = 642
+      object DataPanel: TPanel
+        Left = 6
+        Height = 519
+        Top = 6
+        Width = 630
+        Align = alClient
+        BorderSpacing.Left = 6
+        BorderSpacing.Top = 6
+        BorderSpacing.Right = 6
+        BorderSpacing.Bottom = 6
+        BevelOuter = bvNone
+        ClientHeight = 519
+        ClientWidth = 630
+        TabOrder = 0
+        object DBMemo: TDBMemo
+          Left = 0
+          Height = 116
+          Top = 366
+          Width = 630
+          Align = alBottom
+          Anchors = [akTop, akLeft, akRight, akBottom]
+          BorderSpacing.Bottom = 3
+          DataSource = DataSource
+          ReadOnly = True
+          TabOrder = 0
+          WantReturns = False
+        end
+        object MemoSplitter: TSplitter
+          Cursor = crVSplit
+          Left = 0
+          Height = 6
+          Top = 485
+          Width = 630
+          Align = alBottom
+          ResizeAnchor = akBottom
+        end
+        object DBGrid: TDBGrid
+          AnchorSideTop.Side = asrBottom
+          Left = 0
+          Height = 335
+          Top = 31
+          Width = 630
+          Align = alClient
+          BorderSpacing.Top = 6
+          Color = clWindow
+          Columns = <>
+          DataSource = DataSource
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+          ReadOnly = True
+          TabOrder = 2
+        end
+        object Panel3: TPanel
+          Left = 0
+          Height = 25
+          Top = 0
+          Width = 630
+          Align = alTop
+          AutoSize = True
+          BevelOuter = bvNone
+          ClientHeight = 25
+          ClientWidth = 630
+          TabOrder = 3
+          object DBNavigator1: TDBNavigator
+            Left = 0
+            Height = 25
+            Top = 0
+            Width = 168
+            BevelOuter = bvNone
+            ChildSizing.EnlargeHorizontal = crsScaleChilds
+            ChildSizing.EnlargeVertical = crsScaleChilds
+            ChildSizing.ShrinkHorizontal = crsScaleChilds
+            ChildSizing.ShrinkVertical = crsScaleChilds
+            ChildSizing.Layout = cclLeftToRightThenTopToBottom
+            ChildSizing.ControlsPerLine = 100
+            ClientHeight = 25
+            ClientWidth = 168
+            DataSource = DataSource
+            Options = []
+            TabOrder = 0
+            VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbInsert, nbRefresh]
+          end
+        end
+        object Panel2: TPanel
+          Left = 0
+          Height = 28
+          Top = 491
+          Width = 630
+          Align = alBottom
+          AutoSize = True
+          BevelOuter = bvNone
+          ClientHeight = 28
+          ClientWidth = 630
+          TabOrder = 4
+          object btnExportSQLite3: TButton
+            AnchorSideLeft.Control = Panel2
+            AnchorSideTop.Control = Panel2
+            Left = 0
+            Height = 25
+            Top = 3
+            Width = 111
+            AutoSize = True
+            BorderSpacing.Top = 3
+            Caption = 'Export to sqlite3'
+            OnClick = btnExportSQLite3Click
+            TabOrder = 0
+          end
+          object rbCombinedFile: TRadioButton
+            AnchorSideLeft.Control = btnExportSQLite3
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = btnExportSQLite3
+            AnchorSideTop.Side = asrCenter
+            Left = 123
+            Height = 19
+            Top = 6
+            Width = 188
+            BorderSpacing.Left = 12
+            Caption = 'Combined file with folder name'
+            Checked = True
+            TabOrder = 2
+            TabStop = True
+          end
+          object rbIndividualFiles: TRadioButton
+            AnchorSideLeft.Control = rbCombinedFile
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = btnExportSQLite3
+            AnchorSideTop.Side = asrCenter
+            Left = 323
+            Height = 19
+            Top = 6
+            Width = 96
+            BorderSpacing.Left = 12
+            Caption = 'Individual files'
+            TabOrder = 1
+          end
+        end
+      end
+    end
+    object pgFields: TTabSheet
+      Caption = 'Fields'
+      ClientHeight = 531
+      ClientWidth = 658
+      object Grid: TStringGrid
+        Left = 6
+        Height = 519
+        Top = 6
+        Width = 646
+        Align = alClient
+        AutoFillColumns = True
+        BorderSpacing.Around = 6
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
+        TabOrder = 0
+        ColWidths = (
+          64
+          140
+          140
+          140
+          141
+        )
+        Cells = (
+          5
+          0
+          0
+          'Index'
+          1
+          0
+          'Name'
+          2
+          0
+          'Data type'
+          3
+          0
+          'Size'
+          4
+          0
+          'Required'
+        )
+      end
+    end
+  end
+  object ParadoxDataset: TParadoxDataset
+    FieldDefs = <>
+    AfterScroll = ParadoxDatasetAfterScroll
+    Left = 504
+    Top = 152
+  end
+  object DataSource: TDataSource
+    DataSet = ParadoxDataset
+    Left = 504
+    Top = 216
+  end
+  object ImageList: TImageList
+    Left = 140
+    Top = 228
+    Bitmap = {
+      4C7A020000001000000010000000F10200000000000078DA9594EB4B937114C7
+      7F7F48AF2588420ADF4551AF82DE446F22B22C354388828AB0BC356F53A7DBBC
+      ACB9962BD3BC67595642798B2CEF173453E7A534CD397553B7356F3B9DF344F0
+      9CED69D88B0FE7C0F97CC7C3C3F31D0008404466CF2544B54BD0ED96727F11EA
+      AE947A3740DD5A70C82117E1F98CCEB4DA55808A255F50C82117E1F9B44F1955
+      2B3B5066DB0E0A39E4223C9FFA31ABDCBE0D25F35B4121875C84E7556D9AD285
+      2D289EDD080A39E4223C9FDCACB5CC6D40D1B42728253F37815C91D4C4F389EF
+      F2CCDF7F41A1D5F54F2C3FBC10DF3A05E42287583EBEB1D038E501FDE89A2274
+      8B6B9A90F0F9F01DA2CFF2775E1BF3C75DA019762A42B7D867FDD2F47AD7817C
+      96BF5DFF403BB206EA816545E81653DD234DA7731EC867F95B75C5D9434E48E9
+      B52B42B7C8F20E69DA6C56209FE56FD43C560F3820B9CBA608DD224ADBA5E9EB
+      3C06E4B3FCD5D2CAB4BE1548F8BCA008DDCE989BA4E97A7300C867F928434346
+      BF1354DDCB8AD0EDA4AE5E9AE48A68E351963F9FA313E19A965D416E94817F3F
+      FFDB7F7540FF5333275C70B1D506112D8B706FC8050F6777E0C93C30CA17A5FE
+      A706F43FBD239DBA5DE3F08161C60BD73A97E144E518144DF818257328A38BF8
+      F5BF5D2DEF7F35EEC74B06C168DD613C9AF501B908CFA77CC896F79FF6C3C5FD
+      707F7C9B6199C16F1F5DC4AFBF2DB9F2FED31E56D80E85A39B0CF334FE7FA08B
+      1DF6EFAF5EDE7FDA0FEA5B217FC4CB304D6E527FF54AFD95F79FF6D0DCF7A01F
+      F6308CD60DE5FEC63518E5FDA77D7FD65BD00DB91986312FB8DD2B403EEFEF0B
+      B3BCFFB4EF4B7F05B983EB8C82AF1EB0DB27817C96BF596B91F79FF6BD29CF41
+      D3BFCAC8FBE2FED33FF459FE7A4599BCFFB48724D540769F93A1C3EF52EA1FFA
+      2C1F637AA91E74B0BE872456053CBF7ED80DE48A2BE6232C7F21571B96D7B41A
+      DB38B9A9EA5E927A8E5D7360D79A0340177F43F8F55788CBA653D86BD39EBB55
+      ADA79FF67E13E7B2DA101100B94AF968A3109105F82CDA50119E9320CEAAF391
+      A0F9DF56BC91C9
+    }
+  end
+  object SQLite3Connection: TSQLite3Connection
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = False
+    Transaction = SQLTransaction
+    AlwaysUseBigint = False
+    Left = 712
+    Top = 152
+  end
+  object SQLTransaction: TSQLTransaction
+    Active = False
+    Database = SQLite3Connection
+    Left = 712
+    Top = 218
+  end
+  object SQLQuery1: TSQLQuery
+    FieldDefs = <>
+    Params = <>
+    Left = 712
+    Top = 298
+  end
+end
