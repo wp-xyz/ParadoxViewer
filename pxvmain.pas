@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ShellCtrls, ExtCtrls,
   DBGrids, DBCtrls, paradoxds, db, sqlite3conn, sqldb, ComCtrls, Grids,
-  StdCtrls;
+  StdCtrls, LCLVersion;
 
 type
 
@@ -205,6 +205,12 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := PROGRAM_NAME;
   ShellListview.Mask := '*.db';
+  {$IFDEF MSWINDOWS}
+  {$IF LCL_FullVersion >= 2010000}
+  ShellTreeView.Images := nil;
+  ShellListView.SmallImages := nil;
+  {$IFEND}
+  {$ENDIF}
 end;
 
 procedure TMainForm.OpenParadoxFile(const AFileName: String);
