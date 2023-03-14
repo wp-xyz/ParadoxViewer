@@ -8,7 +8,7 @@ object MainForm: TMainForm
   ClientWidth = 984
   OnActivate = FormActivate
   OnCreate = FormCreate
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object Panel1: TPanel
     Left = 6
     Height = 559
@@ -201,7 +201,7 @@ object MainForm: TMainForm
             Left = 123
             Height = 19
             Top = 6
-            Width = 188
+            Width = 186
             BorderSpacing.Left = 12
             Caption = 'Combined file with folder name'
             Checked = True
@@ -213,10 +213,10 @@ object MainForm: TMainForm
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = btnExportSQLite3
             AnchorSideTop.Side = asrCenter
-            Left = 323
+            Left = 321
             Height = 19
             Top = 6
-            Width = 96
+            Width = 94
             BorderSpacing.Left = 12
             Caption = 'Individual files'
             TabOrder = 1
@@ -227,12 +227,12 @@ object MainForm: TMainForm
     object pgFields: TTabSheet
       Caption = 'Fields'
       ClientHeight = 531
-      ClientWidth = 658
+      ClientWidth = 642
       object Grid: TStringGrid
         Left = 6
         Height = 519
         Top = 6
-        Width = 646
+        Width = 630
         Align = alClient
         AutoFillColumns = True
         BorderSpacing.Around = 6
@@ -240,10 +240,10 @@ object MainForm: TMainForm
         TabOrder = 0
         ColWidths = (
           64
-          140
-          140
-          140
           141
+          141
+          140
+          140
         )
         Cells = (
           5
@@ -266,14 +266,7 @@ object MainForm: TMainForm
       end
     end
   end
-  object ParadoxDataset: TParadoxDataset
-    FieldDefs = <>
-    AfterScroll = ParadoxDatasetAfterScroll
-    Left = 504
-    Top = 152
-  end
   object DataSource: TDataSource
-    DataSet = ParadoxDataset
     Left = 504
     Top = 216
   end
@@ -326,6 +319,7 @@ object MainForm: TMainForm
   object SQLQuery1: TSQLQuery
     FieldDefs = <>
     Params = <>
+    Macros = <>
     Left = 712
     Top = 298
   end

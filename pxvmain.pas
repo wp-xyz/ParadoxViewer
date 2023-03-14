@@ -25,7 +25,6 @@ type
     DataPanel: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
-    ParadoxDataset: TParadoxDataset;
     rbIndividualFiles: TRadioButton;
     rbCombinedFile: TRadioButton;
     ShellListView: TShellListView;
@@ -48,6 +47,7 @@ type
     procedure ShellTreeViewGetImageIndex(Sender: TObject; Node: TTreeNode);
     procedure ShellTreeViewGetSelectedIndex(Sender: TObject; Node: TTreeNode);
   private
+    ParadoxDataset: TParadoxDataset;
     procedure ExportToSQLite3(AsCombinedFile: Boolean);
     procedure OpenParadoxFile(const AFileName: string);
     procedure UpdateGrid;
@@ -211,6 +211,11 @@ begin
   ShellListView.SmallImages := nil;
   {$IFEND}
   {$ENDIF}
+
+  // Avoid installation of the component from CCR
+  ParadoxDataset := TParadoxDataset.Create(self);
+  ParadoxDataset.AfterScroll := @ParadoxDatasetAfterScroll;
+  DataSource.Dataset := ParadoxDataset;
 end;
 
 procedure TMainForm.OpenParadoxFile(const AFileName: String);
