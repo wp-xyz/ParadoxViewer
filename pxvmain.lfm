@@ -6,9 +6,9 @@ object MainForm: TMainForm
   Caption = 'MainForm'
   ClientHeight = 571
   ClientWidth = 984
+  LCLVersion = '4.99.0.0'
   OnActivate = FormActivate
   OnCreate = FormCreate
-  LCLVersion = '2.3.0.0'
   object Panel1: TPanel
     Left = 6
     Height = 559
@@ -28,16 +28,15 @@ object MainForm: TMainForm
       Top = 0
       Width = 316
       Align = alClient
-      FileSortType = fstFoldersFirst
+      FileSortType = fstCustom
       HideSelection = False
       Images = ImageList
-      ReadOnly = True
       TabOrder = 0
+      Options = [tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+      ShellListView = ShellListView
       OnGetImageIndex = ShellTreeViewGetImageIndex
       OnGetSelectedIndex = ShellTreeViewGetSelectedIndex
-      Options = [tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
-      ObjectTypes = [otFolders]
-      ShellListView = ShellListView
+      OnSortCompare = ShellTreeViewSortCompare
     end
     object ShellListView: TShellListView
       Left = 0
@@ -47,13 +46,11 @@ object MainForm: TMainForm
       Align = alBottom
       Color = clDefault
       HideSelection = False
-      ReadOnly = True
       SmallImages = ImageList
       SortType = stText
       TabOrder = 1
-      OnSelectItem = ShellListViewSelectItem
-      ObjectTypes = [otNonFolders]
       ShellTreeView = ShellTreeView
+      OnSelectItem = ShellListViewSelectItem
     end
     object Splitter2: TSplitter
       Cursor = crVSplit
@@ -103,7 +100,7 @@ object MainForm: TMainForm
         TabOrder = 0
         object DBMemo: TDBMemo
           Left = 0
-          Height = 116
+          Height = 121
           Top = 366
           Width = 630
           Align = alBottom
@@ -118,7 +115,7 @@ object MainForm: TMainForm
           Cursor = crVSplit
           Left = 0
           Height = 6
-          Top = 485
+          Top = 360
           Width = 630
           Align = alBottom
           ResizeAnchor = akBottom
@@ -126,7 +123,7 @@ object MainForm: TMainForm
         object DBGrid: TDBGrid
           AnchorSideTop.Side = asrBottom
           Left = 0
-          Height = 335
+          Height = 329
           Top = 31
           Width = 630
           Align = alClient
@@ -150,6 +147,9 @@ object MainForm: TMainForm
           ClientWidth = 630
           TabOrder = 3
           object DBNavigator1: TDBNavigator
+            AnchorSideLeft.Control = Panel3
+            AnchorSideTop.Control = Panel3
+            AnchorSideTop.Side = asrCenter
             Left = 0
             Height = 25
             Top = 0
@@ -168,39 +168,111 @@ object MainForm: TMainForm
             TabOrder = 0
             VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbInsert, nbRefresh]
           end
+          object cmbInputEncoding: TComboBox
+            AnchorSideLeft.Control = Label1
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = Panel3
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = Panel3
+            AnchorSideRight.Side = asrBottom
+            Left = 282
+            Height = 23
+            Top = 1
+            Width = 348
+            Anchors = [akTop, akLeft, akRight]
+            BorderSpacing.Left = 6
+            DropDownCount = 50
+            ItemHeight = 15
+            ItemIndex = 0
+            Items.Strings = (
+              '(automatic)'
+              'CP1250 (Central European languages that use Latin script, (Polish, Czech, Slovak, Hungarian, Slovene, Serbian, Croatian, Bosnian, Romanian and Albanian))'
+              'CP1251 (Cyrillic alphabets)'
+              'CP1252 (Western languages)'
+              'CP1253 (Greek)'
+              'CP1254 (Turkish)'
+              'CP1255 (Hebrew)'
+              'CP1256 (Arabic)'
+              'CP1257 (Baltic languages)'
+              'CP1258 (Vietnamese)'
+              'CP437 (IBM PC)'
+              'CP850 (DOS Latin-1)'
+              'CP852'
+              'CP865 (DOS Nordic languages)'
+              'CP866 (DOS Cyrillic)'
+              'CP874'
+              'CP932'
+              'CP936'
+              'CP949'
+              'CP950'
+              'Macintosh'
+              'KOI8R'
+              'KOI8U'
+              'KOI8RU'
+              'ISO8859-1 (Western Europe)'
+              'ISO8859-2 (Western and Central Europe)'
+              'ISO8859-3 (Western Europe and South European (Turkish, Maltese plus Esperanto))'
+              'ISO8859-4 (Western Europe and Baltic countries (Lithuania, Estonia, Latvia and Lapp))'
+              'ISO8859-5 (Cyrillic alphabet)'
+              'ISO8859-7 (Greek)'
+              'ISO8859-9 (Western Europe with amended Turkish character set)'
+              'ISO8859-10 (Western Europe with rationalised character set for Nordic languages, including complete Icelandic set)'
+              'ISO8859-13 (Baltic languages plus Polish)'
+              'ISO8859-14 (Celtic languages (Irish Gaelic, Scottish, Welsh))'
+              'ISO8859-15 (Added the Euro sign and other rationalisations to ISO 8859-1)'
+              'ISO8859-16 (Central, Eastern and Southern European languages (Albanian, Bosnian, Croatian, Hungarian, Polish, Romanian, Serbian and Slovenian, but also French, German, Italian and Irish Gaelic))'
+            )
+            Style = csDropDownList
+            TabOrder = 1
+            Text = '(automatic)'
+            OnChange = cmbInputEncodingChange
+          end
+          object Label1: TLabel
+            AnchorSideLeft.Control = DBNavigator1
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = Panel3
+            AnchorSideTop.Side = asrCenter
+            Left = 192
+            Height = 15
+            Top = 5
+            Width = 84
+            BorderSpacing.Left = 24
+            Caption = 'Input encoding:'
+          end
         end
         object Panel2: TPanel
           Left = 0
-          Height = 28
-          Top = 491
+          Height = 26
+          Top = 493
           Width = 630
           Align = alBottom
           AutoSize = True
+          BorderSpacing.Top = 6
           BevelOuter = bvNone
-          ClientHeight = 28
+          ClientHeight = 26
           ClientWidth = 630
           TabOrder = 4
           object btnExportSQLite3: TButton
             AnchorSideLeft.Control = Panel2
             AnchorSideTop.Control = Panel2
+            AnchorSideTop.Side = asrCenter
             Left = 0
             Height = 25
-            Top = 3
-            Width = 111
+            Top = 1
+            Width = 110
             AutoSize = True
-            BorderSpacing.Top = 3
             Caption = 'Export to sqlite3'
-            OnClick = btnExportSQLite3Click
             TabOrder = 0
+            OnClick = btnExportSQLite3Click
           end
           object rbCombinedFile: TRadioButton
             AnchorSideLeft.Control = btnExportSQLite3
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = btnExportSQLite3
             AnchorSideTop.Side = asrCenter
-            Left = 123
+            Left = 122
             Height = 19
-            Top = 6
+            Top = 4
             Width = 186
             BorderSpacing.Left = 12
             Caption = 'Combined file with folder name'
@@ -213,9 +285,9 @@ object MainForm: TMainForm
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = btnExportSQLite3
             AnchorSideTop.Side = asrCenter
-            Left = 321
+            Left = 320
             Height = 19
-            Top = 6
+            Top = 4
             Width = 94
             BorderSpacing.Left = 12
             Caption = 'Individual files'
@@ -240,10 +312,10 @@ object MainForm: TMainForm
         TabOrder = 0
         ColWidths = (
           64
-          141
-          141
-          140
-          140
+          137
+          136
+          136
+          136
         )
         Cells = (
           5
@@ -271,6 +343,7 @@ object MainForm: TMainForm
     Top = 216
   end
   object ImageList: TImageList
+    Scaled = True
     Left = 140
     Top = 228
     Bitmap = {
@@ -322,5 +395,10 @@ object MainForm: TMainForm
     Macros = <>
     Left = 712
     Top = 298
+  end
+  object ApplicationProperties: TApplicationProperties
+    ExceptionDialog = aedOkMessageBox
+    Left = 392
+    Top = 218
   end
 end

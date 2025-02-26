@@ -225,7 +225,7 @@ type
   published
     property TableName: TFileName read FFileName write SetFileName;
     property TableLevel: String read GetVersion;
-    property InputEncoding: String read FInputEncoding;
+    property InputEncoding: String read FInputEncoding write FInputEncoding;
     property TargetEncoding: String read FTargetEncoding write SetTargetEncoding stored IsStoredTargetEncoding;
     property Active;
     property AutoCalcFields;
@@ -736,7 +736,8 @@ begin
    else begin
      FFieldInfoPtr := @FHeader^.FieldInfo;
      cp := FHeader^.DosCodePage;
-     FInputEncoding := 'CP' + IntToStr(cp);
+     if FInputEncoding = '' then
+       FInputEncoding := 'CP' + IntToStr(cp);
    end;
 
   if Encrypted then

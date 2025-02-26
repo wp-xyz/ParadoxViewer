@@ -5,21 +5,25 @@ unit pxvMain;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ShellCtrls, ExtCtrls,
-  DBGrids, DBCtrls, paradoxds, db, sqlite3conn, sqldb, ComCtrls, Grids,
-  StdCtrls, LCLVersion;
+  Classes, SysUtils, FileUtil,
+  LCLVersion, LConvEncoding,
+  Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ComCtrls, ShellCtrls, Grids,
+  DB, DBGrids, DBCtrls, ParadoxDS, sqlite3conn, sqldb;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    ApplicationProperties: TApplicationProperties;
     btnExportSQLite3: TButton;
+    cmbInputEncoding: TComboBox;
     DataSource: TDataSource;
     DBGrid: TDBGrid;
     DBMemo: TDBMemo;
     DBNavigator1: TDBNavigator;
     ImageList: TImageList;
+    Label1: TLabel;
     PageControl: TPageControl;
     Panel1: TPanel;
     DataPanel: TPanel;
@@ -39,6 +43,7 @@ type
     SQLQuery1: TSQLQuery;
     SQLTransaction: TSQLTransaction;
     procedure btnExportSQLite3Click(Sender: TObject);
+    procedure cmbInputEncodingChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ParadoxDatasetAfterScroll(DataSet: TDataSet);
@@ -46,9 +51,11 @@ type
       Selected: Boolean);
     procedure ShellTreeViewGetImageIndex(Sender: TObject; Node: TTreeNode);
     procedure ShellTreeViewGetSelectedIndex(Sender: TObject; Node: TTreeNode);
+    function ShellTreeViewSortCompare(Item1, Item2: TFileItem): integer;
   private
     ParadoxDataset: TParadoxDataset;
     procedure ExportToSQLite3(AsCombinedFile: Boolean);
+    function GetInputEncoding: String;
     procedure OpenParadoxFile(const AFileName: string);
     procedure UpdateGrid;
     procedure UpdateMemo;
@@ -78,6 +85,12 @@ begin
     ExportToSQLite3(false);
   if rbCombinedFile.Checked then
     ExportToSQLite3(true);
+end;
+
+procedure TMainForm.cmbInputEncodingChange(Sender: TObject);
+begin
+  if ParadoxDataset.TableName <> '' then
+    OpenParadoxFile(ParadoxDataset.TableName);
 end;
 
 procedure TMainForm.ExportToSQLite3(AsCombinedFile: Boolean);
@@ -137,7 +150,7 @@ begin
     else if F.DataType = ftMemo then
       dt := 'STRING'
     else
-      raise Exception.Create('Export to SQLite3: field type not supported');
+      raise Exception.CreateFmt('Export to SQLite3: field type "%s" not supported', [GetEnumName(TypeInfo(TFieldType), ord(F.DataType))]);
     if i > 0 then sql := sql + ',';
     sql := sql + Format('"%s" %s', [F.FieldName, dt]);
 
@@ -195,9 +208,13 @@ var
 begin
   if ParamCount > 0 then begin
     fn := ParamStr(1);
-    ShellTreeview.Path := ExtractFilepath(fn);
-    ShellTreeview.MakeSelectionVisible;
-    OpenParadoxFile(fn);
+    if DirectoryExists(fn) then
+      ShellTreeView.Path := fn
+    else
+    begin
+      ShellTreeview.Path := ExtractFilepath(fn);
+      OpenParadoxFile(fn);
+    end;
   end;
 end;
 
@@ -218,11 +235,25 @@ begin
   DataSource.Dataset := ParadoxDataset;
 end;
 
+function TMainForm.GetInputEncoding: String;
+var
+  sa: TStringArray;
+begin
+  if (cmbInputEncoding.ItemIndex in [0, -1]) then
+    Result := ''
+  else
+  begin
+    sa := cmbInputEncoding.Items[cmbInputEncoding.ItemIndex].Split(' ');
+    Result := Lowercase(StringReplace(sa[0], '-', '', [rfReplaceAll]));
+  end;
+end;
+
 procedure TMainForm.OpenParadoxFile(const AFileName: String);
 begin
   ParadoxDataset.Close;
   DBMemo.DataField := '';
   ParadoxDataset.TableName := AFileName;
+  ParadoxDataset.InputEncoding := GetInputEncoding;
   ParadoxDataset.Open;
   UpdateMemo;
   UpdateGrid;
@@ -254,10 +285,22 @@ begin
   Node.ImageIndex := 0;
 end;
 
-procedure TMainForm.ShellTreeViewGetSelectedIndex(Sender: TObject; Node: TTreeNode
-  );
+procedure TMainForm.ShellTreeViewGetSelectedIndex(Sender: TObject; Node: TTreeNode);
 begin
   Node.SelectedIndex := 1;
+end;
+
+// from: https://forum.lazarus.freepascal.org/index.php/topic,61347.msg462091.html
+function TMainForm.ShellTreeViewSortCompare(Item1, Item2: TFileItem): integer;
+begin
+  // Make sure that folders are moved to the top
+  Result := ord(Item2.isFolder) - ord(Item1.isFolder);
+  // Move folders beginning with underscore to the top
+  if Result = 0 then
+    if (pos('_', Item1.FileInfo.Name) = 1) or (pos('_', Item2.FileInfo.Name) = 1) then
+      Result := AnsiCompareText(Item1.FileInfo.Name, Item2.FileInfo.Name)
+    else
+      Result := CompareText(Item1.FileInfo.Name, Item2.FileInfo.Name);
 end;
 
 procedure TMainForm.UpdateGrid;
