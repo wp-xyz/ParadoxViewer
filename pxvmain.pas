@@ -222,11 +222,23 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := PROGRAM_NAME;
   ShellListview.Mask := '*.db';
+
+  // Compatibility with Linux/mac
   {$IFDEF MSWINDOWS}
   {$IF LCL_FullVersion >= 2010000}
   ShellTreeView.Images := nil;
   ShellListView.SmallImages := nil;
   {$IFEND}
+  {$ENDIF}
+
+  // The following properties are set at runtime after compilation compatibility
+  // test with Laz 2.0.8
+  {$IF LCL_FullVersion >= 4000000}
+  ShellTreeView.FilesortType := fstCustom;
+  ShellTreeView.OnSortCompare := @ShellTreeViewSortCompare;
+  DBMemo.WantReturns := false;
+  ImageList.Scaled := true;
+  SQLite3Connection.AlwaysUseBigInt := false;
   {$ENDIF}
 
   // Avoid installation of the component from CCR

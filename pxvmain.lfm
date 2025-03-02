@@ -28,7 +28,6 @@ object MainForm: TMainForm
       Top = 0
       Width = 316
       Align = alClient
-      FileSortType = fstCustom
       HideSelection = False
       Images = ImageList
       TabOrder = 0
@@ -36,7 +35,6 @@ object MainForm: TMainForm
       ShellListView = ShellListView
       OnGetImageIndex = ShellTreeViewGetImageIndex
       OnGetSelectedIndex = ShellTreeViewGetSelectedIndex
-      OnSortCompare = ShellTreeViewSortCompare
     end
     object ShellListView: TShellListView
       Left = 0
@@ -109,7 +107,6 @@ object MainForm: TMainForm
           DataSource = DataSource
           ReadOnly = True
           TabOrder = 0
-          WantReturns = False
         end
         object MemoSplitter: TSplitter
           Cursor = crVSplit
@@ -343,7 +340,6 @@ object MainForm: TMainForm
     Top = 216
   end
   object ImageList: TImageList
-    Scaled = True
     Left = 140
     Top = 228
     Bitmap = {
