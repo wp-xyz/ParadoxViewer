@@ -17,9 +17,11 @@ type
   TMainForm = class(TForm)
     ApplicationProperties: TApplicationProperties;
     btnExportSQLite3: TButton;
+    cbAutoSizeCols: TCheckBox;
     cmbInputEncoding: TComboBox;
     DataSource: TDataSource;
     DBGrid: TDBGrid;
+    DBImage: TDBImage;
     DBMemo: TDBMemo;
     DBNavigator1: TDBNavigator;
     ImageList: TImageList;
@@ -29,26 +31,28 @@ type
     DataPanel: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
+    BLOBPanel: TPanel;
     rbIndividualFiles: TRadioButton;
     rbCombinedFile: TRadioButton;
     ShellListView: TShellListView;
     ShellTreeView: TShellTreeView;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
-    MemoSplitter: TSplitter;
+    BLOBSplitter: TSplitter;
     pgData: TTabSheet;
     pgFields: TTabSheet;
     Grid: TStringGrid;
+    ImageSplitter: TSplitter;
     SQLite3Connection: TSQLite3Connection;
     SQLQuery1: TSQLQuery;
     SQLTransaction: TSQLTransaction;
     procedure btnExportSQLite3Click(Sender: TObject);
+    procedure cbAutoSizeColsChange(Sender: TObject);
     procedure cmbInputEncodingChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ParadoxDatasetAfterScroll(DataSet: TDataSet);
-    procedure ShellListViewSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
+    procedure ShellListViewSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure ShellTreeViewGetImageIndex(Sender: TObject; Node: TTreeNode);
     procedure ShellTreeViewGetSelectedIndex(Sender: TObject; Node: TTreeNode);
     function ShellTreeViewSortCompare(Item1, Item2: TFileItem): integer;
@@ -58,8 +62,8 @@ type
     function GetInputEncoding: String;
     procedure OpenParadoxFile(const AFileName: string);
     procedure UpdateGrid;
+    procedure UpdateImage;
     procedure UpdateMemo;
-
   public
 
   end;
@@ -85,6 +89,16 @@ begin
     ExportToSQLite3(false);
   if rbCombinedFile.Checked then
     ExportToSQLite3(true);
+end;
+
+procedure TMainForm.cbAutoSizeColsChange(Sender: TObject);
+begin
+  if cbAutoSizeCols.Checked then
+    DBGrid.Options := DBGrid.Options + [dgAutoSizeColumns]
+  else
+    DBGrid.Options := DBGrid.Options - [dgAutoSizeColumns];
+  if ParadoxDataset.Active then
+    OpenParadoxFile(ParadoxDataset.TableName);
 end;
 
 procedure TMainForm.cmbInputEncodingChange(Sender: TObject);
@@ -264,10 +278,13 @@ procedure TMainForm.OpenParadoxFile(const AFileName: String);
 begin
   ParadoxDataset.Close;
   DBMemo.DataField := '';
+  DBImage.DataField := '';
+
   ParadoxDataset.TableName := AFileName;
   ParadoxDataset.InputEncoding := GetInputEncoding;
   ParadoxDataset.Open;
   UpdateMemo;
+  UpdateImage;
   UpdateGrid;
 
   // Update information in form
@@ -277,6 +294,7 @@ end;
 procedure TMainForm.ParadoxDatasetAfterScroll(DataSet: TDataSet);
 begin
   UpdateMemo;
+  UpdateImage;
 end;
 
 procedure TMainForm.ShellListViewSelectItem(Sender: TObject; Item: TListItem;
@@ -331,6 +349,36 @@ begin
   end;
 end;
 
+procedure TMainForm.UpdateImage;
+var
+  GF: TField;
+  i: Integer;
+begin
+  GF := nil;
+  for i := 0 to ParadoxDataset.FieldCount-1 do
+    if ParadoxDataset.Fields[i].Datatype = ftGraphic then
+    begin
+      GF := ParadoxDataset.Fields[i];
+      break;
+    end;
+  if GF <> nil then
+  begin
+    DBImage.DataField := GF.FieldName;
+    DBImage.Show;
+    BLOBPanel.Show;
+    BLOBSplitter.Show;
+    BLOBSplitter.Top := 0;
+    ImageSplitter.Visible := DBMemo.Visible;
+    ImageSplitter.Left := Width;
+  end else
+  begin
+    DBImage.Hide;
+    ImageSplitter.Hide;
+    BLOBPanel.Visible := DBMemo.Visible;
+    BLOBSplitter.Visible := BLOBPanel.Visible;
+  end;
+end;
+
 procedure TMainForm.UpdateMemo;
 var
   MF: TField;
@@ -338,18 +386,26 @@ var
 begin
   MF := nil;
   for i:=0 to ParadoxDataset.FieldCount-1 do
-    if ParadoxDataset.Fields[i].DataType = ftMemo then begin
+    if ParadoxDataset.Fields[i].DataType = ftMemo then
+    begin
       MF := ParadoxDataset.Fields[i];
       break;
     end;
-  if MF <> nil then begin
+  if MF <> nil then
+  begin
     DBMemo.DataField := MF.FieldName;
     DBMemo.Show;
-    MemoSplitter.Show;
-    MemoSplitter.Top := 0;
-  end else begin
+    BLOBPanel.Show;
+    BLOBSplitter.Show;
+    BLOBSplitter.Top := 0;
+    ImageSplitter.Visible := DBImage.Visible;
+    ImageSplitter.Left := Width;
+  end else
+  begin
+    ImageSplitter.Hide;
     DBMemo.Hide;
-    MemoSplitter.Hide;
+    BLOBPanel.Visible := DBImage.Visible;
+    BLOBSplitter.Visible := BLOBPanel.Visible;
   end;
 end;
 
