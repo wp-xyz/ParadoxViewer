@@ -269,7 +269,7 @@ begin
   FHeader := nil;
   FTargetEncoding := Uppercase(EncodingUTF8);
   FInputEncoding := '';
-  BookmarkSize := SizeOf(LongInt);
+  BookmarkSize := SizeOf(LongWord);
 end;
 
 function TParadoxDataset.AllocRecordBuffer: PChar;
@@ -282,7 +282,7 @@ end;
 
 function TParadoxDataset.BookmarkValid(ABookmark: TBookmark): Boolean;
 begin
-  Result := Assigned(ABookmark) and (Length(ABookmark) <> 0);
+  Result := Assigned(ABookmark) and (Length(ABookmark) >= BookmarkSize);
 end;
 
 function TParadoxDataset.CompareBookmarks(Bookmark1, Bookmark2: TBookmark): Longint;
@@ -577,7 +577,7 @@ end;
 
 function TParadoxDataset.GetRecordSize: Word;
 begin
-  Result := FHeader^.recordSize + sizeof(TRecInfo);
+  Result := FHeader^.recordSize + SizeOf(TRecInfo);
 end;
 
 function TParadoxDataset.GetTargetEncoding: String;
@@ -630,10 +630,23 @@ begin
   ReadBlock;
 end;
 
+{
 procedure TParadoxDataset.InternalGotoBookmark(ABookmark: Pointer);
 begin
   if BookmarkValid(ABookmark) then
     SetRecNo(PLongWord(ABookmark)^);
+end;
+}
+procedure TParadoxDataset.InternalGotoBookmark(ABookmark: Pointer);
+var
+  bm: LongWord;
+begin
+  if (ABookmark <> nil) and (Length(TBookmark(ABookmark)) >= BookmarkSize) then
+  begin
+    bm := PLongWord(ABookmark)^;
+    if bm <= GetRecordCount then
+      SetRecNo(bm);
+  end;
 end;
 
 {
@@ -891,13 +904,10 @@ end;
 
 procedure TParadoxDataset.SetBookmarkData(Buffer: PChar; Data: Pointer);
 begin
-  // The BookMarkData is the RecNo: no need to set nothing;
-{
   if Data <> nil then
     PRecInfo(Buffer + FHeader^.RecordSize)^.RecordNumber := PLongWord(Data)^
   else
     PRecInfo(Buffer + FHeader^.RecordSize)^.RecordNumber := 0;
-  }
 end;
 
 procedure TParadoxDataset.SetBookmarkFlag(Buffer: PChar; Value: TBookmarkFlag);
